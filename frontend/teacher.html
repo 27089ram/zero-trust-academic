@@ -45,40 +45,39 @@
 </div>
 
 <script>
-https://zero-trust-academic-backend.onrender.com
+const BASE_URL = "https://YOUR-BACKEND-URL.onrender.com";
+
 const token = localStorage.getItem("token");
 
 if (!token) {
-    alert("Access denied. Please login again.");
-    window.location.href = "index.html";
-}
-
-fetch(`${BASE_URL}/teacher/dashboard`, {
-    method: "GET",
-    headers: {
-        "token": token
-    }
-})
-.then(res => {
-    if (!res.ok) {
-        throw new Error("Unauthorized");
-    }
-    return res.json();
-})
-.then(data => {
-    document.getElementById("info").innerText =
-        `Welcome ${data.user}. You are logged in as Teacher.`;
-})
-.catch(() => {
-    alert("Unauthorized access. Redirecting to login.");
-    window.location.href = "index.html";
-});
-
-function logout() {
-    localStorage.clear();
-    window.location.href = "index.html";
+    document.body.innerHTML = "<h3>Unauthorized. Please login again.</h3>";
+} else {
+    fetch(`${BASE_URL}/teacher/dashboard`, {
+        method: "GET",
+        headers: {
+            "token": token
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.dashboard) {
+            document.getElementById("content").innerHTML = `
+                <h2>Teacher Dashboard</h2>
+                <p>Welcome, <b>${data.user}</b></p>
+                <p>Access Level: Teacher</p>
+            `;
+        } else {
+            document.getElementById("content").innerHTML =
+                "Access denied. Invalid role.";
+        }
+    })
+    .catch(error => {
+        document.getElementById("content").innerHTML =
+            "Error loading teacher details.";
+    });
 }
 </script>
+
 
 </body>
 </html>
