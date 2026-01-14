@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="style.css">
+    <title>Academic Portal – Signup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+        .box {
+            width: 350px;
+            margin: 100px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+        }
+        button {
+            background: #2c7be5;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #1a5fd0;
+        }
+        p {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Signup</h2>
+
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+
+    <select id="role">
+        <option value="">Select Role</option>
+        <option value="student">Student</option>
+        <option value="teacher">Teacher</option>
+    </select>
+
+    <button onclick="signup()">Create Account</button>
+
+    <p id="result"></p>
+    <p><a href="login.html">Already have an account? Login</a></p>
+</div>
+
+<script>
+const BASE_URL = "http://127.0.0.1:8000";
+
+function signup() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const role = document.getElementById("role").value;
+
+    fetch(`${BASE_URL}/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, role })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.message) {
+            document.getElementById("result").innerText =
+                "Signup successful. Please login.";
+        } else {
+            document.getElementById("result").innerText =
+                data.detail || "Signup failed";
+        }
+    })
+    .catch(() => {
+        document.getElementById("result").innerText =
+            "Backend connection error";
+    });
+}
+</script>
+
+</body>
+</html>

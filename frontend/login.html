@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="style.css">
+    <title>Academic Portal – Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+        }
+        .box {
+            width: 350px;
+            margin: 100px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        input, button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 10px;
+        }
+        button {
+            background: #2c7be5;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #1a5fd0;
+        }
+        p {
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Login</h2>
+
+    <!-- LOGIN SECTION -->
+    <div id="login-section">
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <input type="text" id="device_id" placeholder="Device ID (e.g. laptop_001)">
+        <button onclick="login()">Login</button>
+    </div>
+
+    <!-- OTP SECTION -->
+    <div id="otp-section" style="display:none;">
+        <input type="text" id="otp" placeholder="Enter OTP">
+        <button onclick="verifyOTP()">Verify OTP</button>
+    </div>
+
+    <p id="result"></p>
+    <p><a href="signup.html">New user? Signup</a></p>
+</div>
+
+<script>
+const BASE_URL = "http://127.0.0.1:8000";
+
+function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const device_id = document.getElementById("device_id").value;
+
+    fetch(`${BASE_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, device_id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.next_step === "verify-otp") {
+            document.getElementById("result").innerText =
+                "OTP sent. Check backend console.";
+            document.getElementById("login-section").style.display = "none";
+            document.getElementById("otp-section").style.display = "block";
+        } else {
+            document.getElementById("result").innerText =
+                data.detail || "Login failed";
+        }
+    })
+    .catch(() => {
+        document.getElementById("result").innerText =
+            "Backend connection error";
+    });
+}
+
+function verifyOTP() {
+    const username = document.getElementById("username").value;
+    const otp = document.getElementById("otp").value;
+
+    fetch(`${BASE_URL}/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, otp })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.token) {
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("role", data.role);
+
+            if (data.role === "student") {
+                window.location.href = "student.html";
+            } else {
+                window.location.href = "teacher.html";
+            }
+        } else {
+            document.getElementById("result").innerText =
+                data.detail || "OTP verification failed";
+        }
+    })
+    .catch(() => {
+        document.getElementById("result").innerText =
+            "Backend connection error";
+    });
+}
+</script>
+
+</body>
+</html>

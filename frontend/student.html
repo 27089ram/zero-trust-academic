@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="style.css">
+    <title>Student Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2f5;
+        }
+        .box {
+            width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+        }
+        p {
+            margin: 10px 0;
+        }
+        button {
+            width: 100%;
+            padding: 8px;
+            margin-top: 15px;
+            background: #2c7be5;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #1a5fd0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Student Dashboard</h2>
+    <p id="info">Loading student data...</p>
+    <button onclick="logout()">Logout</button>
+</div>
+
+<script>
+const BASE_URL = "http://127.0.0.1:8000";
+const token = localStorage.getItem("token");
+
+if (!token) {
+    alert("Access denied. Please login again.");
+    window.location.href = "login.html";
+}
+
+fetch(`${BASE_URL}/student/dashboard`, {
+    method: "GET",
+    headers: {
+        "token": token
+    }
+})
+.then(res => {
+    if (!res.ok) {
+        throw new Error("Unauthorized");
+    }
+    return res.json();
+})
+.then(data => {
+    document.getElementById("info").innerText =
+        `Welcome ${data.user}. You are logged in as Student.`;
+})
+.catch(() => {
+    alert("Unauthorized access. Redirecting to login.");
+    window.location.href = "login.html";
+});
+
+function logout() {
+    localStorage.clear();
+    window.location.href = "login.html";
+}
+</script>
+
+</body>
+</html>
