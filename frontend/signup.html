@@ -41,7 +41,7 @@
 </head>
 <body>
 
-<div class="container">
+<div class="box">
     <h2>Signup</h2>
 
     <input type="text" id="username" placeholder="Username">
@@ -56,11 +56,11 @@
     <button onclick="signup()">Create Account</button>
 
     <p id="result"></p>
-    <p><a href="login.html">Already have an account? Login</a></p>
+    <p><a href="index.html">Already have an account? Login</a></p>
 </div>
 
 <script>
-https://zero-trust-academic-backend.onrender.com
+const BASE_URL = "http://127.0.0.1:8000";
 
 function signup() {
     const username = document.getElementById("username").value;
